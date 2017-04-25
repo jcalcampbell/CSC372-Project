@@ -4,8 +4,9 @@ node_modules
 # Database Files
 data
 
-# Credentials file
+# Credentials files
 config/credentials.js
+config/oauth.js
 
 # idea folder
 .idea

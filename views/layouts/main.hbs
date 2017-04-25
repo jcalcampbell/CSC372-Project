@@ -1,13 +1,96 @@
 <!DOCTYPE html>
 <html>
-  <head>
-      {{# if title}}
-          <title>{{title}}</title>
-      {{else}}
-          <title>Breakpoint Games</title>
-      {{/if}}
-  </head>
-  <body>
-    {{{body}}}
-  </body>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {{# if title}}
+        <title>{{title}}</title>
+    {{else}}
+        <title>Breakpoint Games</title>
+    {{/if}}
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+    <link href="/css/jumbotron.css" rel="stylesheet">
+    <link href="/css/simple-sidebar.css" rel="stylesheet">
+    {{{_sections.head}}}
+</head>
+<body>
+<div id="wrapper">
+    <!-- Sidebar -->
+    <div id="sidebar-wrapper">
+        <ul class="sidebar-nav">
+            <li class="sidebar-brand">
+                <a href="#">Start Bootstrap</a>
+            </li>
+            <li>
+                <a href="#">Dashboard</a>
+            </li>
+        </ul>
+    </div>
+    <div id="page-content-wrapper">
+        <!-- /#sidebar-wrapper -->
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                            aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" style="padding-right: 0px" href="/">Breakpoint Games</a>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <form class="navbar-form navbar-right">
+                        {{# if user}}
+                            <div class="form-group">
+                                <a class="btn btn-primary" href="/logout">Logout</a>
+                            </div>
+                        {{else}}
+                            <div class="form-group">
+                                <a class="btn btn-success" href="/login">Login</a>
+                            </div>
+                            <a class="btn btn-primary" href="/register">Register</a>
+                        {{/if}}
+                        <a class="btn btn-default" href="#menu-toggle" id="menu-toggle">Menu</a>
+                    </form>
+                </div><!--/.navbar-collapse -->
+            </div>
+        </nav>
+        {{{body}}}
+        <hr>
+        <footer>Your first visit was on {{firstVisit}}</footer>
+    </div>
+</div>
+{{#if showTests}}
+    <div id="mocha"></div>
+    <script src="/node_modules/mocha/mocha.js"></script>
+    <script src="/node_modules/chai/chai.js"></script>
+    <script>
+        mocha.ui('tdd');
+        var assert = chai.assert;
+    </script>
+    {{#if pageTestScript}}
+        <script src="{{pageTestScript}}"></script>
+    {{/if}}
+    <script>mocha.run();</script>
+{{/if}}
+{{{_sections.scripts}}}
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+<script src="/js/bootstrap.min.js"></script>
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="js/ie10-viewport-bug-workaround.js"></script>
+<script>
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+</script>
+</body>
 </html>

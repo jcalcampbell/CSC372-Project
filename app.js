@@ -4,10 +4,36 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var session = require('express-session');
+var passport = require('passport');
+var FacebookStrategy = require('passport-facebook').Strategy;
+var GoogleStrategy = require('passport-google-oauth2').Strategy;
 
 var credentials = require('./config/credentials');
+var config = require('./config/oauth');
 
+// Route Files
 var index = require('./routes/index');
+//var auth = require('./routes/auth');
+
+/** Authentication Setup **/
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+passport.deserializeUser(function(obj, done) {
+  done(null, obj);
+});
+passport.use(new FacebookStrategy({
+  clientID: config.facebook.clientID,
+  clientSecret: config.facebook.clientSecret,
+  callbackURL: config.facebook.callbackURL
+  },
+  function (accessToken, refreshToken, profile, done) {
+    process.nextTick(function () {
+      return done(null, profile);
+    });
+  }
+));
 
 /** App Setup **/
 var app = express();
@@ -33,6 +59,13 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser(credentials.cookieSecret));
+app.use(session({
+  secret: credentials.cookieSecret,
+  resave: false,
+  saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(express.static(path.join(__dirname, '/public')));
 
 // Tests
@@ -54,6 +87,7 @@ app.use(function (req, res, next) {
 });
 
 /** Route Handlers **/
+//app.use('/auth/*', auth);
 app.use('/', index);
 
 /** Error Handling **/
