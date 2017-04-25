@@ -1,0 +1,15 @@
+# Dependency Folder
+node_modules
+
+# Database Files
+data
+
+# Credentials file
+config/credentials.js
+
+# idea folder
+.idea
+
+# Mac Files
+~*
+.DS_Store
