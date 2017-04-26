@@ -1,5 +1,12 @@
-<div class="container">
-    <div class="col-md-4 col-md-offset-1">
-        <a class="btn btn-facebook" href="/auth/facebook">Login with Facebook</a>
+{{#section 'head'}}
+    <link href="/css/bootstrap-social.css" rel="stylesheet">
+    <link href="/css/font-awesome.min.css" rel="stylesheet">
+{{/section}}
+<div class="row">
+    <div class="col-sm-2">
+        <a class="btn btn-block btn-social btn-twitter" href="/auth/facebook">
+            <span class="fa fa-twitter"></span> Login with Facebook</a>
+        <a class="btn btn-block btn-social btn-google" href="/auth/google">
+            <span class="fa fa-google"></span> Login with Google</a>
     </div>
 </div>

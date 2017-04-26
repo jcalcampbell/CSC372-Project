@@ -5,35 +5,39 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+var mongoose = require('mongoose');
 var passport = require('passport');
-var FacebookStrategy = require('passport-facebook').Strategy;
-var GoogleStrategy = require('passport-google-oauth2').Strategy;
+var Auth = require('./lib/authentication');
 
 var credentials = require('./config/credentials');
 var config = require('./config/oauth');
 
 // Route Files
 var index = require('./routes/index');
-//var auth = require('./routes/auth');
+
+// Mongoose
+mongoose.connect('mongodb://localhost/passport-example');
+var User = require('./models/user');
 
 /** Authentication Setup **/
+// Serialize and Deserialize
 passport.serializeUser(function(user, done) {
-  done(null, user);
+  console.log('serializeUser: ' + user._id);
+  done(null, user._id);
 });
-passport.deserializeUser(function(obj, done) {
-  done(null, obj);
+passport.deserializeUser(function(id, done) {
+  User.findById(id, function(err, user){
+    console.log(user);
+    if(!err) done(null, user);
+    else done(err, null);
+  });
 });
-passport.use(new FacebookStrategy({
-  clientID: config.facebook.clientID,
-  clientSecret: config.facebook.clientSecret,
-  callbackURL: config.facebook.callbackURL
-  },
-  function (accessToken, refreshToken, profile, done) {
-    process.nextTick(function () {
-      return done(null, profile);
-    });
-  }
-));
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated())
+    return next();
+  else
+    return res.redirect('/login');
+}
 
 /** App Setup **/
 var app = express();
@@ -81,13 +85,21 @@ app.use(function (req, res, next) {
     res.locals.firstVisit = req.signedCookies.firstVisit;
   } else {
     res.locals.firstVisit = new Date().toLocaleDateString();
-    res.cookie('firstVisit', res.locals.firstVisit, {signed: true, maxAge: 31557600000});
+    res.cookie('firstVisit', res.locals.firstVisit, { signed: true, maxAge: 31557600000 });
   }
   next();
 });
 
 /** Route Handlers **/
-//app.use('/auth/*', auth);
+app.get('/account', ensureAuthenticated, function(req, res){
+  User.findById(req.session.passport.user, function(err, user) {
+    if(err) {
+      console.log(err);  // handle errors
+    } else {
+      res.render('account', { user: user});
+    }
+  });
+});
 app.use('/', index);
 
 /** Error Handling **/

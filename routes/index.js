@@ -11,10 +11,6 @@ router.get('/login', function (req, res) {
   res.render('login', { title: 'Login' });
 });
 
-router.get('/account', function (req, res) {
-  res.render('account', { title: 'Success' });
-});
-
 // Facebook Login
 router.get('/auth/facebook',
   passport.authenticate('facebook'),
@@ -22,6 +18,21 @@ router.get('/auth/facebook',
 router.get('/auth/facebook/callback',
   passport.authenticate('facebook', { failureRedirect: '/' }),
   function (req, res) {
+    res.redirect('/account');
+  }
+);
+
+// Google Login
+router.get('/auth/google',
+  passport.authenticate('google', { scope: [
+      'https://www.googleapis.com/auth/plus.login',
+      'https://www.googleapis.com/auth/plus.profile.emails.read'
+    ] }
+  )
+);
+router.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/' }),
+  function(req, res) {
     res.redirect('/account');
   }
 );
