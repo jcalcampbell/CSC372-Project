@@ -43,4 +43,8 @@ router.get('/logout', function (req, res) {
   res.redirect('/');
 });
 
+router.get('/games/galactic-warrior', function (req, res) {
+    res.render('games/galactic-warrior', { title: 'Play Galactic Warrior' });
+});
+
 module.exports = router;
