@@ -1,3 +1,4 @@
+// Dependencies
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -5,15 +6,17 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+var flash = require('connect-flash');
 var mongoose = require('mongoose');
 var passport = require('passport');
+
 var Auth = require('./lib/authentication');
 
 var credentials = require('./config/credentials');
 var config = require('./config/oauth');
 
 // Route Files
-var index = require('./routes/index');
+//var index = require('./routes/index');
 
 // Mongoose
 mongoose.connect('mongodb://localhost/passport-example');
@@ -70,6 +73,7 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(flash());
 app.use(express.static(path.join(__dirname, '/public')));
 
 // Tests
@@ -100,7 +104,8 @@ app.get('/account', ensureAuthenticated, function(req, res){
     }
   });
 });
-app.use('/', index);
+//app.use('/', index);
+require('./routes/index')(app, passport);
 
 /** Error Handling **/
 // catch 404 and forward to error handler
