@@ -10,6 +10,7 @@
         <title>Breakpoint Games</title>
     {{/if}}
     <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/font-awesome.min.css" rel="stylesheet">
     <link href="/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
     <link href="/css/jumbotron.css" rel="stylesheet">
     <link href="/css/simple-sidebar.css" rel="stylesheet">
@@ -21,10 +22,10 @@
     <div id="sidebar-wrapper">
         <ul class="sidebar-nav">
             <li class="sidebar-brand">
-                <a href="#">Start Bootstrap</a>
+                <a href="/">Home</a>
             </li>
             <li>
-                <a href="#">Dashboard</a>
+                <a href="/games">Games</a>
             </li>
         </ul>
     </div>
@@ -33,6 +34,9 @@
         <nav class="navbar navbar-inverse navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
+                    <div class="side-nav-btn">
+                        <a class="btn btn-default" href="#menu-toggle" id="menu-toggle"><span class="fa fa-bars"></span></a>
+                    </div>
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
                             aria-expanded="false" aria-controls="navbar">
                         <span class="sr-only">Toggle navigation</span>
@@ -44,16 +48,19 @@
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <form class="navbar-form navbar-right">
+
                         {{# if user}}
+                            <div class="form-group">
+                                <a class="btn btn-warning" href="/profile">My Account</a>
+                            </div>
                             <div class="form-group">
                                 <a class="btn btn-primary" href="/logout">Logout</a>
                             </div>
                         {{else}}
                             <div class="form-group">
-                                <a class="btn btn-success" href="/login">Login/Register</a>
+                                <a class="btn btn-success" href="/login">Login</a>
                             </div>
                         {{/if}}
-                        <a class="btn btn-default" href="#menu-toggle" id="menu-toggle">Menu</a>
                     </form>
                 </div><!--/.navbar-collapse -->
             </div>

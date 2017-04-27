@@ -1,12 +1,31 @@
 {{#section 'head'}}
     <link href="/css/bootstrap-social.css" rel="stylesheet">
-    <link href="/css/font-awesome.min.css" rel="stylesheet">
 {{/section}}
 <div class="row">
     <div class="col-sm-2">
+        <h1><span class="fa fa-sign-in"></span> Login</h1>
+
+        {{# if message.length}}
+            <div class="alert alert-danger">{{message}}</div>
+        {{/if}}
+
+        <form action="/login" method="post">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="text" class="form-control" name="email" placeholder="example@example.com">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" class="form-control" name="password" placeholder="**********">
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-warning">Login</button>
+            </div>
+        </form>
         <a class="btn btn-block btn-social btn-facebook" href="/auth/facebook">
             <span class="fa fa-facebook"></span> Login with Facebook</a>
         <a class="btn btn-block btn-social btn-google" href="/auth/google">
             <span class="fa fa-google"></span> Login with Google</a>
+        <p style="padding-top: 10px">Need an account? <a href="/signup">Signup</a></p>
     </div>
 </div>
