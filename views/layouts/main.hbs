@@ -24,9 +24,15 @@
             <li class="sidebar-brand">
                 <a href="/">Home</a>
             </li>
-            <li>
-                <a href="/games">Games</a>
-            </li>
+            <hr>
+            {{#each games}}
+                <li>
+                    <form id="{{dataName}}" action="{{url}}" method="post">
+                        <a href="" onclick="$('#{{dataName}}').submit(); return false;">{{gameTitle}}</a>
+                    </form>
+                </li>
+            {{/each}}
+            <hr>
             <li>
                 <a href="/newsletter">Newsletter Sign up</a>
             </li>

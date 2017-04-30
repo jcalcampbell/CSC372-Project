@@ -10,38 +10,13 @@ var flash = require('connect-flash');
 var mongoose = require('mongoose');
 var passport = require('passport');
 
-//var Auth = require('./lib/authentication');
 require('./lib/passport')(passport);
 
 var credentials = require('./config/credentials');
 var config = require('./config/oauth');
 
-// Route Files
-//var index = require('./routes/index');
-
 // Mongoose
 mongoose.connect('mongodb://localhost/passport-example');
-//var User = require('./models/user-old');
-
-/** Authentication Setup **/
-/*// Serialize and Deserialize
- passport.serializeUser(function(user, done) {
- console.log('serializeUser: ' + user._id);
- done(null, user._id);
- });
- passport.deserializeUser(function(id, done) {
- User.findById(id, function(err, user){
- console.log(user);
- if(!err) done(null, user);
- else done(err, null);
- });
- });
-function ensureAuthenticated(req, res, next) {
-    if (req.isAuthenticated())
-        return next();
-    else
-        return res.redirect('/login');
-}*/
 
 /** App Setup **/
 var app = express();
@@ -62,6 +37,9 @@ app.engine('hbs', handlebars.engine);
 app.set('view engine', 'hbs');
 
 // Middleware
+var Games = require('./models/games');
+if (app.get('env')==='development') require('./models/games-seed');
+
 app.use(favicon(path.join(__dirname, '/public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -95,17 +73,28 @@ app.use(function (req, res, next) {
     next();
 });
 
-/** Route Handlers **/
-/*app.get('/account', ensureAuthenticated, function (req, res) {
-    User.findById(req.session.passport.user, function (err, user) {
-        if (err) {
-            console.log(err);  // handle errors
-        } else {
-            res.render('account', {user: user});
+// Games for Sidebar
+Games.find(function (err, games) {
+    app.locals.games = games.map(function (game) {
+        var url = "/games?gameTitle=" + game.dataName;
+        return {
+            gameTitle: game.title,
+            url: url,
+            dataName: game.dataName
         }
     });
-});*/
-//app.use('/', index);
+});
+
+/** Route Handlers **/
+app.post('/games', function (req, res) {
+    Games.findOne({'dataName': req.query.gameTitle}, function (err, game) {
+        if (err)
+            res.redirect('/');
+        else
+            res.render('gameSchema', { gameName: game.dataName, width: game.width, height: game.height, externalUrl: game.externalUrl, gTitle: game.title});
+    });
+});
+
 require('./routes/routes')(app, passport);
 
 /** Error Handling **/
