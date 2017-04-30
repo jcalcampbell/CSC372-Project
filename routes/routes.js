@@ -12,10 +12,32 @@ module.exports = function (app, passport) {
         });
     });
 
+    app.get('/newsletter', function (req, res) {
+        res.render('newsletter', {
+            csrf: 'CSRF token goes here'
+        });
+    });
+
+    app.post('/process', function (req, res) {
+        console.log('Form (from querystring): ' + req.query.form);
+        console.log('CSRF token (form hidden form field): ' + req.body._csrf);
+        console.log('Name (from visible form field): ' + req.body.name);
+        console.log('Email (from visible form field): ' + req.body.email);
+        if(req.xhr || req.accepts('json,html') === 'json') {
+            res.send({success: true});
+        } else {
+            res.render('index', { message: req.flash('loginMessage', 'Thank you for signing up!') });
+        }
+    });
+
     // Logout
     app.get('/logout', function (req, res) {
         req.logout();
         res.redirect('/');
+    });
+
+    app.get('/games/galactic-warrior', function (req, res) {
+        res.render('games/galactic-warrior', { user: req.user });
     });
 
     /** Authentication **/
