@@ -74,28 +74,23 @@ app.use(function (req, res, next) {
 });
 
 // Games for Sidebar
-Games.find(function (err, games) {
-    app.locals.games = games.map(function (game) {
-        var url = "/games?gameTitle=" + game.dataName;
-        return {
-            gameTitle: game.title,
-            url: url,
-            dataName: game.dataName
-        }
+app.use(function (req, res, next) {
+    Games.find(function (err, games) {
+        app.locals.games = games.map(function (game) {
+            var url = "/games?gameTitle=" + game.dataName;
+            return {
+                gameTitle: game.title,
+                url: url,
+                dataName: game.dataName
+            }
+        });
     });
+    next();
 });
+
 
 /** Route Handlers **/
-app.post('/games', function (req, res) {
-    Games.findOne({'dataName': req.query.gameTitle}, function (err, game) {
-        if (err)
-            res.redirect('/');
-        else
-            res.render('gameSchema', { gameName: game.dataName, width: game.width, height: game.height, externalUrl: game.externalUrl, gTitle: game.title});
-    });
-});
-
-require('./routes/routes')(app, passport);
+require('./routes/routes')(app, passport, Games);
 
 /** Error Handling **/
 // catch 404 and forward to error handler

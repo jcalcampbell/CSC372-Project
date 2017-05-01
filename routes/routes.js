@@ -1,7 +1,7 @@
-module.exports = function (app, passport) {
+module.exports = function (app, passport, Games) {
     // Homepage
     app.get('/', function (req, res) {
-        res.render('index', { user: req.user });
+        res.render('index', {user: req.user});
     });
 
     // Profile Section
@@ -12,6 +12,24 @@ module.exports = function (app, passport) {
         });
     });
 
+    // Game loader
+    app.post('/games', function (req, res) {
+        Games.findOne({'dataName': req.query.gameTitle}, function (err, game) {
+            if (err)
+                res.redirect('/');
+            else
+                res.render('gameSchema', {
+                    user: req.user,
+                    gameName: game.dataName,
+                    width: game.width,
+                    height: game.height,
+                    externalUrl: game.externalUrl,
+                    gTitle: game.title
+                });
+        });
+    });
+
+    // AJAX newsletter
     app.get('/newsletter', function (req, res) {
         res.render('newsletter', {
             csrf: 'CSRF token goes here'
@@ -23,10 +41,26 @@ module.exports = function (app, passport) {
         console.log('CSRF token (form hidden form field): ' + req.body._csrf);
         console.log('Name (from visible form field): ' + req.body.name);
         console.log('Email (from visible form field): ' + req.body.email);
-        if(req.xhr || req.accepts('json,html') === 'json') {
+        if (req.xhr || req.accepts('json,html') === 'json') {
             res.send({success: true});
         } else {
-            res.render('index', { message: req.flash('loginMessage', 'Thank you for signing up!') });
+            res.render('index', {message: req.flash('loginMessage', 'Thank you for signing up!')});
+        }
+    });
+
+    app.post('/newgame', function (req, res) {
+        new Games({
+            title: req.body.gameName,
+            description: '',
+            externalURL: req.body.gameURL,
+            dataName: req.body.dataName,
+            height: req.body.height,
+            width: req.body.width
+        }).save();
+        if (req.xhr || req.accepts('json,html') === 'json') {
+            res.send({success: true});
+        } else {
+            res.redirect(303, '/');
         }
     });
 
@@ -34,10 +68,6 @@ module.exports = function (app, passport) {
     app.get('/logout', function (req, res) {
         req.logout();
         res.redirect('/');
-    });
-
-    app.get('/games/galactic-warrior', function (req, res) {
-        res.render('games/galactic-warrior', { user: req.user });
     });
 
     /** Authentication **/
@@ -67,7 +97,7 @@ module.exports = function (app, passport) {
 
     // Facebook
     // auth and login
-    app.get('/auth/facebook', passport.authenticate('facebook', { scope: 'email' }));
+    app.get('/auth/facebook', passport.authenticate('facebook', {scope: 'email'}));
 
     // handle callback
     app.get('/auth/facebook/callback', passport.authenticate('facebook', {
@@ -77,7 +107,7 @@ module.exports = function (app, passport) {
 
     // Google
     // auth and login
-    app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+    app.get('/auth/google', passport.authenticate('google', {scope: ['profile', 'email']}));
 
     // handle callback
     app.get('/auth/google/callback', passport.authenticate('google', {
@@ -89,7 +119,7 @@ module.exports = function (app, passport) {
 
     // local
     app.get('/connect/local', function (req, res) {
-        res.render('connect-local', { message: req.flash('loginMessage') });
+        res.render('connect-local', {message: req.flash('loginMessage')});
     });
     app.post('/connect/local', passport.authenticate('local-signup', {
         successRedirect: '/profile',
@@ -98,14 +128,14 @@ module.exports = function (app, passport) {
     }));
 
     // facebook
-    app.get('/connect/facebook', passport.authorize('facebook', { scope: 'email' }));
+    app.get('/connect/facebook', passport.authorize('facebook', {scope: 'email'}));
     app.get('/connect/facebook/callback', passport.authorize('facebook', {
         successRedirect: '/profile',
         failureRedirect: '/'
     }));
 
     // google
-    app.get('/connect/google', passport.authorize('google', { scope: ['profile', 'email'] }));
+    app.get('/connect/google', passport.authorize('google', {scope: ['profile', 'email']}));
     app.get('/connect/google/callback', passport.authorize('google', {
         successRedirect: '/profile',
         failureRedirect: '/'
@@ -114,29 +144,29 @@ module.exports = function (app, passport) {
     /** Unlink Accounts **/
 
     // local
-    app.get('/unlink/local', function(req, res) {
+    app.get('/unlink/local', function (req, res) {
         var user = req.user;
         user.local.email = undefined;
         user.local.password = undefined;
-        user.save(function(err) {
+        user.save(function (err) {
             res.redirect('/profile');
         });
     });
 
     // facebook
-    app.get('/unlink/facebook', function(req, res) {
+    app.get('/unlink/facebook', function (req, res) {
         var user = req.user;
         user.facebook.token = undefined;
-        user.save(function(err) {
+        user.save(function (err) {
             res.redirect('/profile');
         });
     });
 
     // google
-    app.get('/unlink/google', function(req, res) {
+    app.get('/unlink/google', function (req, res) {
         var user = req.user;
         user.google.token = undefined;
-        user.save(function(err) {
+        user.save(function (err) {
             res.redirect('/profile');
         });
     });
